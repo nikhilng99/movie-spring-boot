@@ -1,7 +1,10 @@
 package com.cricket.api.moviespringboot.controller;
 
-import com.cricket.api.moviespringboot.Service.MovieService;
-import com.cricket.api.moviespringboot.entity.Movie;
+import com.cricket.api.moviespringboot.dto.MovieDTO;
+import com.cricket.api.moviespringboot.service.MovieService;
+import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -16,27 +19,29 @@ public class MovieController {
     }
 
     @GetMapping("/{id}")
-    public Movie fetchMovieById(@PathVariable Integer id){
-        return movieService.getMovieById(id);
+    public ResponseEntity<MovieDTO> fetchMovieById(@PathVariable Integer id){
+        return ResponseEntity.ok(movieService.getMovieById(id));
     }
 
     @GetMapping
-    public List<Movie> fetchAllMovies(){
-        return movieService.getMovies();
+    public ResponseEntity<List<MovieDTO>> fetchAllMovies(){
+        return ResponseEntity.ok(movieService.getMovies());
     }
 
     @DeleteMapping("/{id}")
-    public void removeMovie(@PathVariable Integer id){
+    public ResponseEntity<Void> removeMovie(@PathVariable Integer id){
         movieService.deleteMovieById(id);
+        return ResponseEntity.noContent().build();
     }
 
     @PostMapping()
-    public Movie addNewMovie(@RequestBody Movie movie){
-        return movieService.addMovie(movie);
+    public ResponseEntity<MovieDTO> addNewMovie(@RequestBody @Valid MovieDTO movie){
+        return ResponseEntity.status(HttpStatus.CREATED).body(movieService.addMovie(movie));
     }
 
     @PutMapping("/{id}")
-    public Movie updateMovieById(@PathVariable Integer id, @RequestBody Movie movie){
-        return movieService.updateMovie(id, movie);
+    public ResponseEntity<MovieDTO> updateMovieById(@PathVariable Integer id, @RequestBody @Valid MovieDTO movie){
+        MovieDTO updatedMovieDTO = movieService.updateMovie(id, movie);
+        return ResponseEntity.ok(updatedMovieDTO);
     }
 }
